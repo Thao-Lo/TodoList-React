@@ -1,23 +1,29 @@
-import logo from './logo.svg';
 import './App.css';
+import { NavBar } from './components/example/NavBar';
+import State from './components/State';
+import Count from './components/example/Count';
+import DarkMode from './components/DarkMode';
+import { useState } from "react";
+import LoginForm from './components/LoginForm';
+import UserList from './components/UserList';
+import TodoContainer from './components/todo-list/TodoContainer';
+import TodoList from './components/todo-list/TodoList';
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const handleLogin = () => {
+    setIsLoggedIn(!isLoggedIn);
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {/* <NavBar />
+      <State />
+      <Count />
+      <DarkMode />
+      {isLoggedIn ? <UserList /> : <LoginForm onLogin={handleLogin}/>} */}
+      <TodoList />
+
     </div>
   );
 }
