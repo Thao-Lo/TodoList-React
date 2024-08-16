@@ -1,0 +1,3 @@
+- cd ReactSPA\first-react-app
+- npm start 
+- ctrl + C
