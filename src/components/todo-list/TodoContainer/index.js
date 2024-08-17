@@ -12,9 +12,9 @@ import StatusFilter from '../StatusFilter';
 
 const TodoContainer = () => {
     const [todos, setTodos] = useState([]);
-    const [searchValue, setSearchValue] = useState('');
-    const [filteredTodos, setFilteredTodos] = useState([]);
+    const [searchValue, setSearchValue] = useState('');   
     const [currentSortDirection, setCurrentSortDirection] = useState("asc");
+    const [filterStatus, setFilterStatus] = useState('show-all');
 
     const handleAddTodo = (taskName) => {
         const newTodos = [{
@@ -24,7 +24,6 @@ const TodoContainer = () => {
             createdAt: getCurrentDateWithFormat(),
         }, ...todos];
         setTodos(newTodos);
-        setFilteredTodos(newTodos);
     }
     const handleUpdateTodo = (todoId) => {
         const newTodos = [...todos];
@@ -33,53 +32,34 @@ const TodoContainer = () => {
         newTodos.sort((a, b) => {
             return a.isDone - b.isDone;
         })
-        setTodos(newTodos);
-        setFilteredTodos(newTodos);
+        setTodos(newTodos);    
     }
     const handleDeleteTodo = (todoId) => {
         const newTodos = todos.filter(todo => todo.id !== todoId);
-        setTodos(newTodos);
-        setFilteredTodos(newTodos);
+        setTodos(newTodos);       
     }
 
     const handleSearch = (value) => {
         setSearchValue(value);
     }
     const handleStatusOption = (option) => {
-        let filteredTodo = [];
-        if (option === 'show-all') {
-            filteredTodo = todos;
-        } else if (option === 'done') {
-            filteredTodo = todos.filter(item => item.isDone);
-
-        } else {
-            filteredTodo = todos.filter(item => !item.isDone)
-
-        }
-        setFilteredTodos(filteredTodo);
-        console.log(filteredTodo);
-
+        setFilterStatus(option);       
     }
 
     const handleSort = (title) => {
         let sortedTodos = [];
         if (title === 'status') {
-            sortedTodos = [...filteredTodos].sort((a, b) => {
+            sortedTodos = [...todos].sort((a, b) => {
                 return currentSortDirection === 'asc' ? b.isDone - a.isDone : a.isDone - b.isDone
             })
-
-            setCurrentSortDirection(currentSortDirection === 'asc' ? 'desc' : 'asc')
-            setFilteredTodos(sortedTodos)
+            setCurrentSortDirection(currentSortDirection === 'asc' ? 'desc' : 'asc')            
         }
         if (title === 'task-name') {
-            sortedTodos = [...filteredTodos].sort((a, b) => {
+            sortedTodos = [...todos].sort((a, b) => {
                 return currentSortDirection === 'asc' ? (a.name > b.name ? 1 : (a.name < b.name ? -1 : 0)) : (b.name > a.name ? 1 : (b.name < a.name ? -1 : 0))
             })
-
-            setCurrentSortDirection(currentSortDirection === 'asc' ? 'desc' : 'asc')
-            setFilteredTodos(sortedTodos)
+            setCurrentSortDirection(currentSortDirection === 'asc' ? 'desc' : 'asc')            
         }
-
     }
 
     return <Box sx={{
@@ -114,8 +94,20 @@ const TodoContainer = () => {
                 <Box>Created At</Box>
                 <Box>Delete</Box>
             </StyledGridBox>
-            {filteredTodos
-                .filter(item => item.name.toLowerCase().includes(searchValue.toLowerCase()))
+            {todos
+                .filter(item => {
+                    //empty String is a part of String
+                    //no search value === '' => get all
+                    if(item.name.toLowerCase().includes(searchValue.toLowerCase())){
+                        if(filterStatus == "show-all"){
+                            return true
+                        }else if(filterStatus == "done"){
+                            return item.isDone
+                        }else{
+                            return !item.isDone
+                        }
+                    }              
+                })
                 .map(({ id, name, isDone, createdAt }) => {
                     return <TodoItem handleUpdateTodo={handleUpdateTodo} handleDeleteTodo={handleDeleteTodo} id={id} name={name} isDone={isDone} createdAt={createdAt} key={`todo-item-${id}`} />
                 })}
