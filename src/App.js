@@ -9,6 +9,7 @@ import UserList from './components/UserList';
 import TodoContainer from './components/todo-list/TodoContainer';
 import TodoList from './components/todo-list/TodoList';
 import TimerContainer from './components/timer/TimerContainer';
+import TodoListEffect from './components/todo-useEffect/TodoListEffect';
 
 
 function App() {
@@ -24,7 +25,8 @@ function App() {
       <Count />
       <DarkMode />
       {isLoggedIn ? <UserList /> : <LoginForm onLogin={handleLogin}/>} */}
-      <TodoList />
+      {/* <TodoList /> */}
+      <TodoListEffect />
      {/* <TimerContainer/> */}
     </div>
   

@@ -1,36 +1,50 @@
-import AddInputContainer from '../AddInputContainer';
-import { Box, Card, IconButton, Typography } from '@mui/material';
-import TodoItem from '../TodoItem';
-import { useState } from 'react';
-import { getCurrentDateWithFormat } from "../utils";
-import SearchContainer from '../SearchContainer';
-import StyledGridBox from '../StyledGridBox';
+import { Box, Button, Card, CircularProgress, IconButton, Typography } from '@mui/material';
+import TodoItemEffect from '../TodoItemEffect';
+import { useEffect, useState } from 'react';
+import SearchContainer from '../../todo-list/SearchContainer';
+import StyledGridBox from '../../todo-list/StyledGridBox';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
-import { TaskCompleteContainer, TaskResult } from './TodoContainer.styles';
-import StatusFilter from '../StatusFilter';
+import { TaskCompleteContainer, TaskResult } from './TodoContainerEffect.styles';
+import StatusFilter from '../../todo-list/StatusFilter';
 
-const TodoContainer = () => {
+const TodoContainerEffect = () => {
     const [todos, setTodos] = useState([]);
     const [searchValue, setSearchValue] = useState('');
     const [currentSortDirection, setCurrentSortDirection] = useState("asc");
     const [filterStatus, setFilterStatus] = useState('show-all');
+    const [isLoading, setIsLoading] = useState(true);
+    const [fetchAgain, setFetchAgain] = useState(false);
 
-    const handleAddTodo = (taskName) => {
-        const newTodos = [{
-            id: Date.now(),
-            name: taskName,
-            isDone: false,
-            createdAt: getCurrentDateWithFormat(),
-        }, ...todos];
-        setTodos(newTodos);
-    }
+
+    useEffect(() => {
+        fetch(`https://dummyjson.com/todos?limit=5`)
+            .then(response => {
+                console.log("Response Object:", response);
+                console.log("Status Code:", response.status);
+                console.log("Status Text:", response.statusText);
+                console.log("Response OK?:", response.ok);
+                console.log("Response Headers:", response.headers);
+
+                return response.json()
+            })
+            .then(data => {
+                setTodos(data.todos);
+                setIsLoading(false);
+                console.log("data:", data.todos);
+                console.log("todos", todos);
+                console.log("isLoading: " + isLoading);
+            })
+
+    }, [fetchAgain])
+
+    console.log(fetchAgain);
     const handleUpdateTodo = (todoId) => {
         const newTodos = [...todos];
         const updatedTodo = newTodos.find(todo => todo.id === todoId);
-        updatedTodo.isDone = !updatedTodo.isDone;
+        updatedTodo.completed = !updatedTodo.completed;
         newTodos.sort((a, b) => {
-            return a.isDone - b.isDone;
+            return a.completed - b.completed;
         })
         setTodos(newTodos);
     }
@@ -50,56 +64,69 @@ const TodoContainer = () => {
         let sortedTodos = [];
         if (title === 'status') {
             sortedTodos = [...todos].sort((a, b) => {
-                return currentSortDirection === 'asc' ? b.isDone - a.isDone : a.isDone - b.isDone
+                return currentSortDirection === 'asc' ? b.completed - a.completed : a.completed - b.completed
             })
             setCurrentSortDirection(currentSortDirection === 'asc' ? 'desc' : 'asc')
             setTodos(sortedTodos);
         }
         if (title === 'task-name') {
             sortedTodos = [...todos].sort((a, b) => {
-                return currentSortDirection === 'asc' ? (a.name > b.name ? 1 : (a.name < b.name ? -1 : 0)) : (b.name > a.name ? 1 : (b.name < a.name ? -1 : 0))
+                return currentSortDirection === 'asc' ? (a.todo > b.todo ? 1 : (a.todo < b.todo ? -1 : 0)) : (b.todo > a.todo ? 1 : (b.todo < a.todo ? -1 : 0))
             })
             setCurrentSortDirection(currentSortDirection === 'asc' ? 'desc' : 'asc')
             setTodos(sortedTodos);
         }
     }
 
-    const todoList = todos
+    let todoList = todos
         .filter(item => {
             //empty String is a part of String
             //no search value === '' => get all
-            if (item.name.toLowerCase().includes(searchValue.toLowerCase())) {
+            if (item.todo.toLowerCase().includes(searchValue.toLowerCase())) {
                 if (filterStatus === "show-all") {
                     return true
                 } else if (filterStatus === "done") {
-                    return item.isDone
+                    return item.completed
                 } else {
-                    return !item.isDone
+                    return !item.completed
                 }
             }
+            return false
         })
-        .map(({ id, name, isDone, createdAt }) => {
-            return <TodoItem
+        .map(({ id, todo, completed }) => {
+            return <TodoItemEffect
                 handleUpdateTodo={handleUpdateTodo}
                 handleDeleteTodo={handleDeleteTodo}
                 id={id}
-                name={name}
-                isDone={isDone}
-                createdAt={createdAt}
+                todo={todo}
+                completed={completed}
                 key={`todo-item-${id}`} />
         })
 
-    return <Box sx={{
+    let taskDoneCount = todos.reduce((taskCount, item) => item.completed ? taskCount + 1 : taskCount, 0);
 
-    }}>
-        <Card sx={{ minWidth: 300, maxWidth: 800 }}>
-            <AddInputContainer handleAddTodo={handleAddTodo} />
+    return <Box sx={{}}>
+        <Card sx={{ minWidth: 500, maxWidth: 900 }}>
+            <Box sx={{ fontWeight: 'bold', marginBottom: '1rem' }}>To Do List</Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-around' }}>
-                <StatusFilter handleStatusOption={handleStatusOption} />
                 <SearchContainer handleSearch={handleSearch} />
+                <StatusFilter handleStatusOption={handleStatusOption} />
+                <Button variant="contained" onClick={() => setFetchAgain(!fetchAgain)}>Refresh</Button>
             </Box>
+
+
             <hr />
             <StyledGridBox>
+                <Box>Id</Box>
+
+                <Box sx={{ display: 'flex', justifyContent: 'center', gap: '3px' }}>
+                    <Typography component="div">
+                        Task Name
+                    </Typography>
+                    <IconButton color="primary" aria-label="sort up" sx={{ padding: 0 }} onClick={() => handleSort('task-name')}>
+                        {currentSortDirection === 'asc' ? <TrendingUpIcon sx={{}} /> : <TrendingDownIcon sx={{}} />}
+                    </IconButton>
+                </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'center', gap: '3px' }}>
                     <Typography component="div">
                         Status
@@ -109,32 +136,20 @@ const TodoContainer = () => {
                         {currentSortDirection === 'asc' ? <TrendingUpIcon sx={{}} /> : <TrendingDownIcon sx={{}} />}
                     </IconButton>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'center', gap: '3px' }}>
-                    <Typography component="div">
-                        Task Name
-                    </Typography>
-                    <IconButton color="primary" aria-label="sort up" sx={{ padding: 0 }} onClick={() => handleSort('task-name')}>
-                        {currentSortDirection === 'asc' ? <TrendingUpIcon sx={{}} /> : <TrendingDownIcon sx={{}} />}
-                    </IconButton>
-                </Box>
-                <Box>Created At</Box>
                 <Box>Delete</Box>
             </StyledGridBox>
-            {
-                //render todo Items
-                todoList
-            }
+            {isLoading ? <CircularProgress /> : todoList}
             <hr />
             <TaskCompleteContainer>
                 <TaskResult>
-                    Task Done: {todos.reduce((taskCount, item) => item.isDone ? taskCount + 1 : 0, 0)} /{todos.length}
+                    Task Done: {taskDoneCount} /{todos.length}
                 </TaskResult>
             </TaskCompleteContainer>
         </Card>
     </Box>
 }
 
-export default TodoContainer;
+export default TodoContainerEffect;
 
 /**
  * !! EXERCISE:
