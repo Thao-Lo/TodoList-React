@@ -12,7 +12,7 @@ align-items: center;
 `
 function TodoListEffect() {
     return <StyleCenterContainer>
-        <TodoContainerEffect/>
+        <TodoContainerEffect />
     </StyleCenterContainer>
 }
 export default TodoListEffect;

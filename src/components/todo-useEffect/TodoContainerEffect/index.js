@@ -14,31 +14,44 @@ const TodoContainerEffect = () => {
     const [currentSortDirection, setCurrentSortDirection] = useState("asc");
     const [filterStatus, setFilterStatus] = useState('show-all');
     const [isLoading, setIsLoading] = useState(true);
-    const [fetchAgain, setFetchAgain] = useState(false);
+    const [error, setError] = useState('');
+    // const [fetchAgain, setFetchAgain] = useState(false);
 
+    const fetchTodos = async () => {
+        try {
+            const res = await fetch(`https://dummyjson.com/todos?limit=5`);
+            const data = await res.json();
+            setTodos(data);
+        } catch (e) {
+            setError(e.message)
+        }
+    }
 
     useEffect(() => {
-        fetch(`https://dummyjson.com/todos?limit=5`)
-            .then(response => {
-                console.log("Response Object:", response);
-                console.log("Status Code:", response.status);
-                console.log("Status Text:", response.statusText);
-                console.log("Response OK?:", response.ok);
-                console.log("Response Headers:", response.headers);
+        if (isLoading) {
+            fetchTodos();
+        }
+        // fetch(`https://dummyjson.com/todos?limit=5`)
+        //     .then(response => {
+        //         console.log("Response Object:", response);
+        //         console.log("Status Code:", response.status);
+        //         console.log("Status Text:", response.statusText);
+        //         console.log("Response OK?:", response.ok);
+        //         console.log("Response Headers:", response.headers);
 
-                return response.json()
-            })
-            .then(data => {
-                setTodos(data.todos);
-                setIsLoading(false);
-                console.log("data:", data.todos);
-                console.log("todos", todos);
-                console.log("isLoading: " + isLoading);
-            })
+        //         return response.json()
+        //     })
+        //     .then(data => {
+        //         setTodos(data.todos);
+        //         setIsLoading(false);
+        //         console.log("data:", data.todos);
+        //         console.log("todos", todos);
+        //         console.log("isLoading: " + isLoading);
+        //     })
 
-    }, [fetchAgain])
+    }, [isLoading])
 
-    console.log(fetchAgain);
+  
     const handleUpdateTodo = (todoId) => {
         const newTodos = [...todos];
         const updatedTodo = newTodos.find(todo => todo.id === todoId);
@@ -104,14 +117,16 @@ const TodoContainerEffect = () => {
         })
 
     let taskDoneCount = todos.reduce((taskCount, item) => item.completed ? taskCount + 1 : taskCount, 0);
-
+    if (error) {
+        return <h3>{error}</h3>
+    }
     return <Box sx={{}}>
         <Card sx={{ minWidth: 500, maxWidth: 900 }}>
             <Box sx={{ fontWeight: 'bold', marginBottom: '1rem' }}>To Do List</Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-around' }}>
                 <SearchContainer handleSearch={handleSearch} />
                 <StatusFilter handleStatusOption={handleStatusOption} />
-                <Button variant="contained" onClick={() => setFetchAgain(!fetchAgain)}>Refresh</Button>
+                <Button variant="contained" onClick={() => setIsLoading(false)}>Refresh</Button>
             </Box>
 
 
