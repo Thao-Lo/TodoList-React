@@ -12,7 +12,9 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
+import Badge from '@mui/material/Badge';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 const pages = [{
   route: '/',
@@ -94,12 +96,32 @@ function NavBarEcommer() {
             LOGO
           </Typography>
 
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button key={page.route} onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }} >
-                <Link to={page.route}> {page.label}</Link>
-              </Button>
-            ))}
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: "space-between", alignItems: "center", marginRight: '1rem' }}>
+            <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+              {pages.slice(0, pages.length - 1).map((page) => (
+                <Button key={page.route} onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }} >                 
+                  <NavLink
+                    to={page.route}
+                    style={({ isActive, isPending }) => {
+                      return {
+                        color: isActive ? "red" : "inherit",
+                          textDecoration: "none"
+                      };
+                    }}
+                    className={({ isActive, isPending }) => {
+                      return isActive ? "active" : isPending ? "pending" : "";
+                    }}>
+                    {page.label}
+                  </NavLink>
+                </Button>
+              ))}
+            </Box>
+
+            {pages.slice(-1).map((page) => (
+              <Badge badgeContent={4} color="primary">
+                <Link to={page.route}> <ShoppingCartIcon color="action" key={page.route} /></Link>
+              </Badge>))}
+
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>

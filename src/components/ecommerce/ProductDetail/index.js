@@ -1,8 +1,11 @@
 import { Container, ImageList, ImageListItem, Box, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 
 function ProductDetail({ product }) {
+   
+
     return (
-        <Box sx={{margin: '2rem'}}>
+        <Box sx={{ margin: '2rem' }}>
             <Box>
                 <Typography variant="h5" component="h5">{product.title}</Typography>
             </Box>
@@ -12,9 +15,9 @@ function ProductDetail({ product }) {
                 </Typography>
             </Box>
             <Box>
-            <Typography variant="h6" color="text.secondary">
-                        {product.description}
-                    </Typography>
+                <Typography variant="h6" color="text.secondary">
+                    {product.description}
+                </Typography>
             </Box>
         </Box>
 

@@ -8,22 +8,24 @@ import CardMedia from '@mui/material/CardMedia';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 
-function ProductCard({ id, title, thumbnail, brand, price }) {
+function ProductCard({ product }) {
     return (
         <Box sx={{ margin: '0.5rem' }}>
             <Card sx={{ maxWidth: 345, height: 450 }}>
-                <CardHeader title={<Link to={`/products/${id}`}>{title}</Link>} sx={{ height: 64, alignItems: 'start' }} />
+                <CardHeader
+                    title={<Link to={`/products/${product.id}`} style={{ textDecoration: 'none', fontSize: '1.25rem' }}>{product.title}</Link>}
+                    sx={{ height: 64, alignItems: 'start' }} />
                 <CardMedia
                     sx={{ height: 200, backgroundSize: 'contain' }}
-                    image={thumbnail}
-                    title={title}
+                    image={product.thumbnail}
+                    title={product.title}
                 />
                 <CardContent sx={{ height: 60 }}>
                     <Typography gutterBottom variant="h5" component="div">
-                        ${price}
+                        ${product.AddShoppingCartIconprice}
                     </Typography>
                     <Typography variant="h6" color="text.secondary">
-                        {brand}
+                        {product.brand}
                     </Typography>
                 </CardContent>
                 <CardActions sx={{ justifyContent: 'end' }}>

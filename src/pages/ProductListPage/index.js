@@ -18,10 +18,10 @@ function ProductListPage() {
         fetchProducts();
     }, [])
 
-    let productList = products.map(({ id, title, brand, thumbnail, price }) => {
+    let productList = products.map((product) => {
         return (
             <Grid xs={4}>
-                <ProductCard id={id} key={id} title={title} brand={brand} thumbnail={thumbnail} price={price} />
+                <ProductCard  key={`${product.id}-${product.title}`} product={product}  />
             </Grid>
         )
     })
