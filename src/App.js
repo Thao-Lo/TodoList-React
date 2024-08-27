@@ -23,6 +23,7 @@ import CartPage from './pages/CartPage';
 import NavBarEcommer from './components/ecommerce/NavBarEcommer';
 import HomePage from './pages/HomePage';
 import ProductDetailPage from './pages/ProductDetailPage'
+import { CartProvider } from './hooks/CartContext';
 
 const router = createBrowserRouter([
   {
@@ -77,15 +78,18 @@ function App() {
     //   {/* <TimerContainer/> */}
     // </div>
     // <RouterProvider router={router} />
-    <BrowserRouter>
-      <NavBarEcommer />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/products" element={<ProductListPage />} />
-        <Route path="/products/:productId" element={<ProductDetailPage />} />
-        <Route path="/cart" element={<CartPage />} />
-      </Routes>
-    </BrowserRouter>
+    <CartProvider>
+      <BrowserRouter>
+        <NavBarEcommer />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/products" element={<ProductListPage />} />
+          <Route path="/products/:productId" element={<ProductDetailPage />} />
+          <Route path="/cart" element={<CartPage />} />
+        </Routes>
+      </BrowserRouter>
+    </CartProvider>
+
   );
 }
 

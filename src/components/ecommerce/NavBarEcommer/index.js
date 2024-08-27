@@ -15,6 +15,7 @@ import AdbIcon from '@mui/icons-material/Adb';
 import { Link, NavLink } from 'react-router-dom';
 import Badge from '@mui/material/Badge';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { useCart } from '../../../hooks/CartContext';
 
 const pages = [{
   route: '/',
@@ -32,6 +33,7 @@ const pages = [{
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function NavBarEcommer() {
+  const {cart} = useCart();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -118,7 +120,7 @@ function NavBarEcommer() {
             </Box>
 
             {pages.slice(-1).map((page) => (
-              <Badge badgeContent={4} color="primary">
+              <Badge badgeContent={cart.length} color="primary">
                 <Link to={page.route}> <ShoppingCartIcon color="action" key={page.route} /></Link>
               </Badge>))}
 

@@ -21,32 +21,32 @@ function RelatedProducts({ product }) {
 
     useEffect(() => {
         fetchProductByCategory();
-        return () => { fetchProductByCategory()}
+        return () => { fetchProductByCategory() }
     }, [])
 
 
     return (
-        <Box sx={{ minHeight: '5rem', width: "90vw", display:'flex', gap:'1rem', padding:'0.5rem' }}>
-            {products.map( item  => {
+        <Box sx={{ minHeight: '5rem', width: "90vw", display: 'flex', gap: '1rem', padding: '0.5rem' }}>
+            {products.map(item => {
                 return (
-                <Card sx={{ width: 345, height: 250}} key={item.id + item.title}>
-                    <CardActionArea>
-                        <CardMedia
-                            component="img"
-                            height="140"
-                            image={item.thumbnail}
-                            alt={item.title}
-                        />
-                        <CardContent>
-                            <Typography gutterBottom variant="h5" component="div">
-                              ${item.price}
-                            </Typography>
-                            <Typography variant="body1" color="text.secondary">
-                                {item.title} 
-                            </Typography>
-                        </CardContent>
-                    </CardActionArea>
-                </Card>
+                    <Card sx={{ width: 345, height: 250 }} key={item.id + item.title}>
+                        <CardActionArea>
+                            <CardMedia
+                                component="img"
+                                height="140"
+                                image={item.thumbnail}
+                                alt={item.title}
+                            />
+                            <CardContent>
+                                <Typography gutterBottom variant="h5" component="div">
+                                    ${item.price}
+                                </Typography>
+                                <Typography variant="body1" color="text.secondary">
+                                    {item.title}
+                                </Typography>
+                            </CardContent>
+                        </CardActionArea>
+                    </Card>
                 )
             })}
 
