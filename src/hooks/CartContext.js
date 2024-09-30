@@ -1,42 +1,21 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useReducer } from "react";
 
 
 const CartContext = createContext();
-const initialCart = [];
+const initialState = [];
+// const initialCart = [];
+
+export const CART_ACTION = {
+    ADD_ITEM: 'ADD_ITEM',
+    UPDATE_ITEM: 'UPDATE_ITEM',
+    REMOVE_ITEM: 'REMOVE_ITEM'
+};
 
 export function CartProvider({ children }) {
-    const [cart, setCart] = useState(initialCart);
+    //USE -REDUCER 
+    const [state, dispatch] = useReducer(cartReducer, initialState)
 
-    const addToCart = (item) => {
-        const itemIndex = cart.findIndex(cartItem => cartItem.id === item.id);
-        if (itemIndex >= 0) {
-            const newCart = [...cart];
-            newCart[itemIndex].quantity = newCart[itemIndex].quantity + item.quantity;
-            return setCart(newCart)
-        } else {
-            setCart(prevCart => [...prevCart, item])
-        }
-    }
-    const updateCartItem = (id, quantity) => {
-        const itemIndex = cart.findIndex(cartItem => cartItem.id === id);
-        if (itemIndex >= 0) {
-            const newCart = [...cart];
-            newCart[itemIndex].quantity = quantity;
-            console.log(newCart);
-            return setCart(newCart)
-        }
-    }
-    const deleteItem = (id) => {
-        const itemIndex = cart.findIndex(cartItem => cartItem.id === id);
-        if (itemIndex >= 0) {
-            const newCart = cart.filter(cartItem => cartItem.id !== id);
-            return setCart(newCart)
-        } else {
-
-        }
-    }
-
-    return <CartContext.Provider value={{ cart, addToCart, deleteItem, updateCartItem }}>
+    return <CartContext.Provider value={{ state, dispatch }}>
         {children}
     </CartContext.Provider>
 }
@@ -46,16 +25,39 @@ export function useCart() {
     return useContext(CartContext);
 }
 
+function cartReducer(state, action) {
+
+    // const { ADD_ITEM, UPDATE_ITEM, DELETE_ITEM } = CART_ACTION;
+    switch (action.type) {
+        case CART_ACTION.ADD_ITEM: {
+            let { product, quantity } = action.payload;
+            console.log("item quantity: " + quantity + typeof (quantity));
+            const itemIndex = state.findIndex(cartItem => cartItem.product.id === product.id);
+            if (itemIndex >= 0) {
+                const newCart = [...state];
+                console.log(" newCart[itemIndex]", newCart[itemIndex]);
+                newCart[itemIndex] = { ...newCart[itemIndex], quantity: newCart[itemIndex].quantity + quantity }
+                // newCart[itemIndex].quantity += quantity
+                console.log("new quantity: " + newCart[itemIndex].quantity, typeof (newCart[itemIndex].quantity));
+                return newCart;
+            }
+            return [...state, { product, quantity }];
+        }
+        case CART_ACTION.UPDATE_ITEM: {
+            let { product, quantity } = action.payload;
+            const itemIndex = state.findIndex(cartItem => cartItem.product.id === product.id);
+            if (itemIndex >= 0) {
+                const newCart = [...state];
+                newCart[itemIndex].quantity = quantity;
+                return newCart;
+            }
+            break;
+        }
+        case CART_ACTION.REMOVE_ITEM: {
+            const { product } = action.payload;
+            return [...state].filter(cartItem => cartItem.product.id !== product.id)
+        }
+    }
+}
 
 
-
-// const [cart, setCart] = useState(inititalCart);
-// const addItem = (item) => {
-//     // check if the product already in the cart or not
-//     const itemIndex = cart.findIndex(cartItem => cartItem.id === item.id);
-//     if (itemIndex >= 0) {
-//         const newCart = [...cart];
-//         newCart[itemIndex].quantity = +newCart[itemIndex].quantity + +item.quantity
-//         return setCart(newCart);
-//     }
-//     setCart((prevCart) => [...prevCart, item])

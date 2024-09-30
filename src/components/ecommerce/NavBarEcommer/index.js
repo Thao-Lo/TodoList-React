@@ -12,10 +12,12 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import Badge from '@mui/material/Badge';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useCart } from '../../../hooks/CartContext';
+import * as AuthService from '../../../services/authServices'
+
 
 const pages = [{
   route: '/',
@@ -26,14 +28,48 @@ const pages = [{
   label: 'Products'
 },
 {
+  route: '/login',
+  label: 'Login'
+},
+{
+  route: '/me',
+  label: 'My Profile'
+},
+{
   route: '/cart',
   label: 'Cart'
 }
 ];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+
+const settings = [{
+    page: 'Profile',
+    function: ()=>{
+      console.log('navigate to profile page');
+    },
+},
+{
+  page: 'Account',
+  function: ()=>{
+    console.log('navigate to account page');
+  },
+},
+{
+  page: 'Dashboard',
+  function: ()=>{
+    console.log('navigate to dashboard page');
+  },
+},
+{
+  page: 'Logout',
+  function: () => {
+    console.log('navigate to logout'); 
+    AuthService.logout()
+    window.location.reload();
+  } 
+}];
 
 function NavBarEcommer() {
-  const {cart} = useCart();
+  const {state: cart} = useCart();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -120,7 +156,7 @@ function NavBarEcommer() {
             </Box>
 
             {pages.slice(-1).map((page) => (
-              <Badge badgeContent={cart.length} color="primary">
+              <Badge badgeContent={cart && cart.length} color="primary">
                 <Link to={page.route}> <ShoppingCartIcon color="action" key={page.route} /></Link>
               </Badge>))}
 
@@ -138,9 +174,9 @@ function NavBarEcommer() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu} >
 
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+              {settings.map(({page, function: onClickFunction}) => (
+                <MenuItem key={page} onClick={onClickFunction}>
+                  <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
             </Menu>

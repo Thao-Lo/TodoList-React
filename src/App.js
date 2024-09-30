@@ -3,7 +3,7 @@ import { NavBar } from './components/example/NavBar';
 import State from './components/State';
 import Count from './components/example/Count';
 import DarkMode from './components/DarkMode';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LoginForm from './components/LoginForm';
 import UserList from './components/UserList';
 import TodoContainer from './components/todo-list/TodoContainer';
@@ -24,6 +24,8 @@ import NavBarEcommer from './components/ecommerce/NavBarEcommer';
 import HomePage from './pages/HomePage';
 import ProductDetailPage from './pages/ProductDetailPage'
 import { CartProvider } from './hooks/CartContext';
+import LoginPage from './pages/LoginPage';
+import UserPage from './pages/UserPage';
 
 const router = createBrowserRouter([
   {
@@ -57,9 +59,19 @@ const router = createBrowserRouter([
 ]);
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const handleLogin = () => {
-    setIsLoggedIn(!isLoggedIn);
-  }
+  useEffect(() => {
+      const userData = localStorage.getItem('user');
+      if(userData){
+        setIsLoggedIn(true)
+      }
+  },[])
+
+
+
+  // const handleLogin = () => {
+  //   setIsLoggedIn(!isLoggedIn);
+  // }
+
 
   //ProductListPage
   //ProductDetailPage
@@ -83,9 +95,15 @@ function App() {
         <NavBarEcommer />
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/products" element={<ProductListPage />} />
           <Route path="/products/:productId" element={<ProductDetailPage />} />
           <Route path="/cart" element={<CartPage />} />
+          {isLoggedIn && <Route path="/me" element={<UserPage/>}/>}
+          
+         {/* trang nao ko match thi hien ra 404 */}
+          <Route path='*' element={<h1>404</h1>}/>
+
         </Routes>
       </BrowserRouter>
     </CartProvider>

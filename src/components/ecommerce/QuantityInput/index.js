@@ -62,3 +62,14 @@ export default function QuantityInputContainer({ min, max, defaultValue, handleA
         </div>
     )
 }
+
+{/* <Input value={currentNumber} onKeyDown={(event) => {
+    if(!(/[0-9]/.test(event.key) || "Backspace" == event.key)){
+        event.preventDefault();
+        let number = parseInt(currentNumber + event.target.value,10)
+        setCurrentNumber(number);
+    }
+
+}}
+
+    /> */}

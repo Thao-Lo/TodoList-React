@@ -7,11 +7,11 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { useCart } from '../../../hooks/CartContext';
+import { CART_ACTION, useCart } from '../../../hooks/CartContext';
 
 
 function ProductCard({ product }) {
-    const {addToCart} = useCart();
+    const { dispatch} = useCart();
     return (
         <Box sx={{ margin: '0.5rem' }}>
             <Card sx={{ maxWidth: 345, height: 450 }}>
@@ -35,7 +35,8 @@ function ProductCard({ product }) {
                     <IconButton aria-label="add to favorites">
                         <FavoriteIcon />
                     </IconButton>
-                    <IconButton aria-label="add to cart" onClick={() => addToCart({ id: product.id, title: product.title, quantity: 1 })}>
+                    <IconButton aria-label="add to cart" 
+                    onClick={() => dispatch({type: CART_ACTION.ADD_ITEM, payload:{product, quantity: 1}})}>
                         <AddShoppingCartIcon />
                     </IconButton>
                 </CardActions>

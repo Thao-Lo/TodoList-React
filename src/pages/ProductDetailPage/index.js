@@ -7,8 +7,7 @@ import RelatedProducts from "../../components/ecommerce/RelatedProducts";
 
 function ProductDetailPage() {
     const [product, setProduct] = useState({});
-    const [isLoading, setIsLoading] = useState(true);
-    const [quantity, setQuantity] = useState(1);
+    const [isLoading, setIsLoading] = useState(true);   
 
     let params = useParams();
     console.log("params", params);

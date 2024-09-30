@@ -1,15 +1,13 @@
-import { Container, ImageList, ImageListItem, Box, Typography, IconButton } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { useCart } from "../../../hooks/CartContext";
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import QuantityInputContainer from "../QuantityInput";
-
+import { Box, IconButton, Typography } from "@mui/material";
+import React, { useState } from "react";
+import { CART_ACTION, useCart } from "../../../hooks/CartContext";
+import NumbericInput from '../NumericInput';
 function ProductDetail({ product }) {
-    const { addToCart } = useCart();
+    console.log("product", product);
+    const [quantity, setQuantity] = useState(1);
+    const {dispatch} = useCart();   
 
-    const handleAddToCart = (inputQuantity) => {
-        addToCart({id: product.id, title: product.title, quantity: inputQuantity })
-    }
     return (
         <Box sx={{ margin: '2rem' }}>
             <Box>
@@ -25,11 +23,14 @@ function ProductDetail({ product }) {
                     {product.description}
                 </Typography>
             </Box>
-            <Box>
-                <IconButton aria-label="add to cart" onClick={() => addToCart({id: product.id, title: product.title, quantity: 1 })}>
+            <Box sx={{display:'flex'}}>
+                <NumbericInput value={quantity} onChange={setQuantity} min={1} max={product.stock} />
+                <IconButton aria-label="add to cart" 
+                onClick={() => dispatch({type: CART_ACTION.ADD_ITEM, payload:{product, quantity: quantity}})}>
                     <AddShoppingCartIcon />
                 </IconButton>
-                <QuantityInputContainer min={1} max={10} defaultValue={1} handleAddToCart={handleAddToCart} showUpdateCart={false}/>
+
+              
             </Box>
         </Box>
 
