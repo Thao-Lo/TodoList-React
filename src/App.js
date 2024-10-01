@@ -26,6 +26,7 @@ import ProductDetailPage from './pages/ProductDetailPage'
 import { CartProvider } from './hooks/CartContext';
 import LoginPage from './pages/LoginPage';
 import UserPage from './pages/UserPage';
+import { UserProvider, useUser } from './hooks/UserContext';
 
 const router = createBrowserRouter([
   {
@@ -58,20 +59,9 @@ const router = createBrowserRouter([
 
 ]);
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  useEffect(() => {
-      const userData = localStorage.getItem('user');
-      if(userData){
-        setIsLoggedIn(true)
-      }
-  },[])
-
-
-
   // const handleLogin = () => {
   //   setIsLoggedIn(!isLoggedIn);
   // }
-
 
   //ProductListPage
   //ProductDetailPage
@@ -79,7 +69,6 @@ function App() {
 
   return (
     // <div className="App">
-
     //   {/* <NavBar />
     //   <State />
     //   <Count />
@@ -90,24 +79,26 @@ function App() {
     //   {/* <TimerContainer/> */}
     // </div>
     // <RouterProvider router={router} />
-    <CartProvider>
-      <BrowserRouter>
-        <NavBarEcommer />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} />
-          <Route path="/products" element={<ProductListPage />} />
-          <Route path="/products/:productId" element={<ProductDetailPage />} />
-          <Route path="/cart" element={<CartPage />} />
-          {isLoggedIn && <Route path="/me" element={<UserPage/>}/>}
-          
-         {/* trang nao ko match thi hien ra 404 */}
-          <Route path='*' element={<h1>404</h1>}/>
+    <UserProvider>
+      <CartProvider>
+        <BrowserRouter>
+          <NavBarEcommer />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/products" element={<ProductListPage />} />
+            <Route path="/products/:productId" element={<ProductDetailPage />} />
+            <Route path="/cart" element={<CartPage />} />
 
-        </Routes>
-      </BrowserRouter>
-    </CartProvider>
+            <Route path="/me" element={<UserPage />} />
 
+            {/* trang nao ko match thi hien ra 404 */}
+            <Route path='*' element={<h1>404</h1>} />
+
+          </Routes>
+        </BrowserRouter>
+      </CartProvider>
+    </UserProvider>
   );
 }
 

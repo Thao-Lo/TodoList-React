@@ -2,14 +2,16 @@ import { useEffect, useState } from "react";
 import { Input, InputContainer, Label, LoginContainer, LoginForm, Button } from "./LoginPage.styles";
 import * as AuthService from '../../services/authServices';
 import { useNavigate } from "react-router-dom";
+import { USER_ACTION, useUser } from "../../hooks/UserContext";
 
-function LoginPage({isLoggedIn,setIsLoggedIn}) {
+function LoginPage() {
     const [loginFormValue, setLoginFormValue] = useState(
         {
             username: '',
             password: ''
         }
     )
+    const { state, dispatch } = useUser();
     const navigate = useNavigate();
 
     const handleInputChange = (e) => {
@@ -26,26 +28,23 @@ function LoginPage({isLoggedIn,setIsLoggedIn}) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const {username, password } = loginFormValue;
-        try{
+        const { username, password } = loginFormValue;
+        try {
             //call login function from Auth service
-           const data = await AuthService.login(username, password);
-           //props from App js to navigate pages if user login success or fail
-           setIsLoggedIn(true);
-        //    localStorage.setItem('hi', data)
-           console.log(localStorage.getItem('user'));
-        }catch(error){
-                console.log('Login fail: ', error);
-        }      
+            const data = await AuthService.login(username, password);
+            dispatch({ type: USER_ACTION.LOGIN, payload: data})           
+
+        } catch (error) {
+            dispatch({ type: USER_ACTION.AUTH_ERROR, payload: error.message})
+            console.log('Login fail: ', error);
+        }
     }
 
-    //always use navigate in useEffect or event handler
-    useEffect(()=> {
-        if(isLoggedIn){
+    useEffect(() => {
+        if (state.isAuthenticated) {
             navigate('/')
         }
-    },[isLoggedIn, navigate]) 
-
+    }, [state.isAuthenticated, navigate])
     return (
         <LoginContainer>
             <LoginForm onSubmit={handleSubmit}>

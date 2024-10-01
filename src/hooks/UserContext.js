@@ -6,7 +6,7 @@ const initialState = {
     isAuthenticated: false,
     error: null
 };
-const USER_ACTION = {
+export const USER_ACTION = {
     REGISTER: 'REGISTER',
     LOGIN: 'LOGIN',
     AUTH_ERROR: 'AUTH_ERROR',
@@ -19,24 +19,23 @@ const UserReducer = (state, action) => {
     switch (action.type) {
         case USER_ACTION.REGISTER: { break; }
         case USER_ACTION.LOGIN: {
-
-            break;
+                return{...state, user: action.payload, isAuthenticated: true, error: null}
+          
         }
         case USER_ACTION.AUTH_ERROR: {
-            
-            break;
+            return {...state, isAuthenticated: false, error: action.payload}
+           
         }
         case USER_ACTION.SET_USER: {
-            
-            break;
+           return{...state, user: action.payload, isAuthenticated: true, error: false}
+           
         }
         case USER_ACTION.UPDATE_USER: {
             
             break;
         }
         case USER_ACTION.LOGOUT: {
-             localStorage.removeItem('user');
-            break;
+           return{...state, user: null, isAuthenticated: false, error: null}
         }       
     }
 }
@@ -44,7 +43,7 @@ const UserReducer = (state, action) => {
 export const useUser = () => useContext(UserContext);
 
 export function UserProvider({ children }) {
-    const [state, dispatch] = useReducer(UserReducer, user)
+    const [state, dispatch] = useReducer(UserReducer, initialState)
     return (
         <UserContext.Provider value={{ state, dispatch }}>
             {children}

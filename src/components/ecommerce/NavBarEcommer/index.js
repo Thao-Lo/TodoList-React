@@ -17,6 +17,7 @@ import Badge from '@mui/material/Badge';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useCart } from '../../../hooks/CartContext';
 import * as AuthService from '../../../services/authServices'
+import { USER_ACTION, useUser } from '../../../hooks/UserContext';
 
 
 const pages = [{
@@ -28,10 +29,6 @@ const pages = [{
   label: 'Products'
 },
 {
-  route: '/me',
-  label: 'My Profile'
-},
-{
   route: '/cart',
   label: 'Cart'
 }
@@ -39,42 +36,32 @@ const pages = [{
 
 const settings = [{
   page: 'Products',
- onClick: (handleCloseUserMenu, navigate) => {
-      handleCloseUserMenu(); navigate('/products')
- }
+  route: '/products'
 },
 {
   page: 'Dashboard',
-  onClick : (handleCloseUserMenu, navigate) => {
-      handleCloseUserMenu(); navigate('/')
-  }
+  route: '/'
 },
 {
   page: 'Profile',
-  onClick: (handleCloseUserMenu, navigate)=>{
-    handleCloseUserMenu(); navigate('/me')
-  },
+  route: '/me'
 },
 {
   page: 'Login',
-  onClick: (handleCloseUserMenu, navigate)=>{
-    handleCloseUserMenu(); navigate('/login')
-  },
+  route: '/login'
 },
 {
   page: 'Logout',
   //parameter flexibility, missing: undefined, extra: ignore
-  onClick: () => {
-    console.log('navigate to logout'); 
-    AuthService.logout()
-    window.location.reload();
-  } 
+  route: '/login'
 }];
 
 function NavBarEcommer() {
-  const {state: cart} = useCart();
+  const { state: cart } = useCart();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+
+  const { state, dispatch } = useUser();
   const navigate = useNavigate();
 
   const handleOpenNavMenu = (event) => {
@@ -91,6 +78,18 @@ function NavBarEcommer() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+  const handleUserMenuClick = (page, route) => {  
+    if (page === 'Logout') {
+      AuthService.logout();
+      dispatch({ type: USER_ACTION.LOGOUT })
+      navigate('/login')
+      handleCloseUserMenu()
+    }
+    else{
+      navigate(route);
+      handleCloseUserMenu()
+    }
+  }
 
   return (
     <AppBar position="static">
@@ -141,13 +140,13 @@ function NavBarEcommer() {
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: "space-between", alignItems: "center", marginRight: '1rem' }}>
             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
               {pages.slice(0, pages.length - 1).map((page) => (
-                <Button key={page.route} onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }} >                 
+                <Button key={page.route} onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }} >
                   <NavLink
                     to={page.route}
                     style={({ isActive, isPending }) => {
                       return {
                         color: isActive ? "red" : "inherit",
-                          textDecoration: "none"
+                        textDecoration: "none"
                       };
                     }}
                     className={({ isActive, isPending }) => {
@@ -178,8 +177,16 @@ function NavBarEcommer() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu} >
 
-              {settings.map(({page, onClick}) => (
-                <MenuItem key={page} onClick={() => onClick(handleCloseUserMenu, navigate)}>
+              {state.isAuthenticated ? settings
+              .filter(({page}) => page !== 'Login') 
+              .map(({ page, route }) => (
+                <MenuItem key={page} onClick={() => handleUserMenuClick(page, route)}>
+                  <Typography textAlign="center">{page}</Typography>
+                </MenuItem>
+              ))              
+              : settings.filter(({page}) => page !== 'Profile' && page !== 'Logout')
+              .map(({ page, route }) => (
+                <MenuItem key={page} onClick={() => handleUserMenuClick(page, route)}>
                   <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}

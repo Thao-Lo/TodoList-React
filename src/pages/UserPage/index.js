@@ -1,38 +1,51 @@
 import { useEffect, useState } from "react";
 import { fetchProtectedData, fetchUserData } from "../../services/authServices";
+import { USER_ACTION, useUser } from "../../hooks/UserContext";
+import { useNavigate } from "react-router-dom";
 
 function UserPage() {
-    const [user, setUser] = useState({});
+    const { state, dispatch } = useUser();
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null)
+    const navigate = useNavigate();
 
     useEffect(() => {
         //using axios promise base
         const getUserData = async () => {
             try {
                 const data = await fetchProtectedData('/me');
-                setUser(data)
+                dispatch({ type: USER_ACTION.SET_USER, payload: data });
+                setIsLoading(false);
             }
             catch (error) {
-                throw new Error(error)
+                console.log('error', error);
+                setIsLoading(false) //stop loading when error occur
+                setError("You need to log in to access this page.");
+                setTimeout(() => {
+                    navigate('/login')
+                }, 3000)
+
             }
         }
         getUserData();
-    }, [])
+    }, [dispatch, navigate])
 
+    if (isLoading) return <div>....Loading</div>
+    if (error) return <div>{error}</div>
     return (
         <div>
             <h1>User Profile Page</h1>
-            {user ? (
-                <div> 
-                     <img src={user.image} alt={user.firstName}/>
-                    <div>Full name: {user.lastName} {user.firstName} </div>
-                    <div>Email: {user.email}</div>
-                    <div>Gender: {user.gender}</div>                
-                   
-                </div>                
-            )
+            {state.user ? (
+                <div>
+                    <img src={state.user.image} alt={state.user.firstName} />
+                    <div>Full name: {state.user.lastName} {state.user.firstName} </div>
+                    <div>Email: {state.user.email}</div>
+                    <div>Gender: {state.user.gender}</div>
+
+                </div>            )
                 :
                 (
-                    <div>Loading</div>
+                    <div>No user Data available</div>
                 )}
         </div>
     )
