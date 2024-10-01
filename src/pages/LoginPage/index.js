@@ -14,6 +14,7 @@ function LoginPage({isLoggedIn,setIsLoggedIn}) {
 
     const handleInputChange = (e) => {
         console.log(e.target.value);
+        //key: value, base on name update value of input when it changed
         const { name, value } = e.target;
         setLoginFormValue((preValue) => (
             {
@@ -27,7 +28,9 @@ function LoginPage({isLoggedIn,setIsLoggedIn}) {
         e.preventDefault();
         const {username, password } = loginFormValue;
         try{
+            //call login function from Auth service
            const data = await AuthService.login(username, password);
+           //props from App js to navigate pages if user login success or fail
            setIsLoggedIn(true);
         //    localStorage.setItem('hi', data)
            console.log(localStorage.getItem('user'));
@@ -35,6 +38,8 @@ function LoginPage({isLoggedIn,setIsLoggedIn}) {
                 console.log('Login fail: ', error);
         }      
     }
+
+    //always use navigate in useEffect or event handler
     useEffect(()=> {
         if(isLoggedIn){
             navigate('/')

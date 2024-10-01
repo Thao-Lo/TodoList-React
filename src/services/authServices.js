@@ -48,6 +48,8 @@ const refreshToken = async () => {
     }
     throw new Error("FAILED TO REFRESH TOKEN")
 }
+
+//reuseable function, can apply for authorization also cart page
 export const fetchProtectedData = async (endpoint) => {
     try {
         const response = await axios.get(`${API_URL}${endpoint}`)
@@ -57,8 +59,8 @@ export const fetchProtectedData = async (endpoint) => {
     catch (error) {
         // status 401 token's expired
         if (error.response && error.response.status == 401) {
-            const data = await refreshToken();
-            const response = await axios.get(`${API_URL}${endpoint}`);
+            await refreshToken();   //refresh token when has status 401
+            const response = await axios.get(`${API_URL}${endpoint}`); // try the request again after refresh token
             return response.data
 
         }
@@ -69,6 +71,7 @@ export const fetchProtectedData = async (endpoint) => {
 
 }
 
+//extra function if using protected function
 export const fetchUserData = async () => {
     try {
         const response = await axios.get(`${API_URL}/me`)
