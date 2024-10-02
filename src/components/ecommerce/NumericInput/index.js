@@ -35,6 +35,7 @@ export default function NumericInput({ min, max, value, onChange }) {
 
         } else {
             setError(null);
+            //a function prop from parent component
             onChange(inputValue);
         }
     }
@@ -44,6 +45,7 @@ export default function NumericInput({ min, max, value, onChange }) {
             <QuantityBtn onClick={handleDecrease}>
                 <AdjustIcon>-</AdjustIcon>
             </QuantityBtn>
+            {/* onChange of input component, not the prop from parent component*/}
             <InputQuantity type="number" value={value} onChange={handleInputChange} name="quantity" min={min} max={max} />
             <QuantityBtn onClick={handleIncrease}>
                 <AdjustIcon>+</AdjustIcon>

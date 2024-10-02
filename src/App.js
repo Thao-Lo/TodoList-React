@@ -58,6 +58,9 @@ const router = createBrowserRouter([
   }
 
 ]);
+
+const ProductListPageLazy = lazy(() => import('./pages/ProductListPage'))
+
 function App() {
   // const handleLogin = () => {
   //   setIsLoggedIn(!isLoggedIn);
